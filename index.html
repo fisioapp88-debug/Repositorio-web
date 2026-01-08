@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SYSTEM WORLD - Software para Gestión de Consultorios de Salud</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css">
+    <style>
+        :root {
+            --primary: #1a73e8;
+            --primary-dark: #0d47a1;
+            --secondary: #25D366; /* WhatsApp green */
+            --secondary-dark: #128C7E;
+            --accent: #fbbc04;
+            --light: #f8f9fa;
+            --dark: #202124;
+            --gray: #5f6368;
+            --light-gray: #e8eaed;
+            --transition: all 0.3s ease;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            color: var(--dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* WhatsApp Floating Button */
+        .whatsapp-float {
+            position: fixed;
+            width: 280px;
+            bottom: 30px;
+            right: 30px;
+            background-color: var(--secondary);
+            color: white;
+            border-radius: 50px;
+            text-align: center;
+            font-size: 16px;
+            box-shadow: 0 4px 20px rgba(37, 211, 102, 0.3);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            transform: translateX(120px);
+            opacity: 0;
+            animation: slideInRight 0.8s forwards 1s;
+            overflow: hidden;
+        }
+
+        .whatsapp-float:hover {
+            background-color: var(--secondary-dark);
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
+            width: 300px;
+        }
+
+        .whatsapp-float i {
+            font-size: 28px;
+            margin-right: 15px;
+            flex-shrink: 0;
+            animation: pulse 2s infinite;
+        }
+
+        .whatsapp-text {
+            text-align: left;
+            flex-grow: 1;
+        }
+
+        .whatsapp-text strong {
+            display: block;
+            font-size: 14px;
+        }
+
+        .whatsapp-text span {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        .whatsapp-pulse {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50px;
+            background-color: var(--secondary);
+            z-index: -1;
+            animation: pulse-ring 2s infinite;
+        }
+
+        @keyframes slideInRight {
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(0.9);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(1.4);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .whatsapp-float {
+                width: 60px;
+                height: 60px;
+                bottom: 20px;
+                right: 20px;
+                border-radius: 50%;
+                padding: 0;
+                justify-content: center;
+            }
+            
+            .whatsapp-float:hover {
+                width: 65px;
+                height: 65px;
+            }
+            
+            .whatsapp-text {
+                display: none;
+            }
+            
+            .whatsapp-float i {
+                margin-right: 0;
+                font-size: 32px;
+            }
+        }
+
+        /* Header */
+        header {
+            background-color: white;
+            box-shadow: var(--shadow);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            color: var(--primary);
+            font-size: 28px;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .logo-text span {
+            color: var(--secondary);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        nav a:hover {
+            color: var(--primary);
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            left: 0;
+            bottom: -5px;
+            transition: var(--transition);
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        .cta-button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cta-button:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .cta-button.whatsapp {
+            background-color: var(--secondary);
+        }
+
+        .cta-button.whatsapp:hover {
+            background-color: var(--secondary-dark);
+        }
+
+        .mobile-menu {
+            display: none;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            padding: 150px 0 100px;
+            margin-top: 70px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: rgba(26, 115, 232, 0.1);
+            top: -100px;
+            right: -100px;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: rgba(37, 211, 102, 0.1);
+            bottom: -50px;
+            left: -50px;
+        }
+
+        .hero-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-text {
+            flex: 1;
+        }
+
+        .hero-text h1 {
+            font-size: 42px;
+            margin-bottom: 20px;
+            color: var(--dark);
+            line-height: 1.2;
+        }
+
+        .hero-text h1 span {
+            color: var(--primary);
+        }
+
+        .hero-text p {
+            font-size: 18px;
+            color: var(--gray);
+            margin-bottom: 30px;
+        }
+
+        .hero-image {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero-image img {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .hero-image:hover img {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .floating-element {
+            position: absolute;
+            background-color: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 2;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .floating-element:nth-child(1) {
+            top: -20px;
+            left: 0;
+            animation-delay: 0s;
+        }
+
+        .floating-element:nth-child(2) {
+            bottom: 30px;
+            right: 0;
+            animation-delay: 1s;
+        }
+
+        .floating-element i {
+            color: var(--secondary);
+            font-size: 24px;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Features Section */
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .section-title h2 {
+            font-size: 36px;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+
+        .section-title p {
+            color: var(--gray);
+            font-size: 18px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .features {
+            padding: 100px 0;
+            background-color: var(--light);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background-color: rgba(26, 115, 232, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+
+        .feature-icon i {
+            font-size: 30px;
+            color: var(--primary);
+        }
+
+        .feature-card h3 {
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+
+        .feature-card p {
+            color: var(--gray);
+        }
+
+        /* Plans Section */
+        .plans {
+            padding: 100px 0;
+            background-color: white;
+        }
+
+        .plans-slider {
+            margin: 0 -15px;
+        }
+
+        .plan-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 40px 30px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            text-align: center;
+            margin: 15px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+        }
+
+        .plan-card:hover {
+            transform: translateY(-15px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--primary);
+        }
+
+        .plan-card.popular::before {
+            content: 'MÁS POPULAR';
+            position: absolute;
+            top: 15px;
+            right: -30px;
+            background-color: var(--accent);
+            color: white;
+            padding: 5px 30px;
+            transform: rotate(45deg);
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .plan-header {
+            margin-bottom: 30px;
+        }
+
+        .plan-name {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+
+        .plan-price {
+            font-size: 42px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .plan-period {
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        .plan-features {
+            list-style: none;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .plan-features li {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--light-gray);
+            display: flex;
+            align-items: center;
+        }
+
+        .plan-features li i {
+            color: var(--secondary);
+            margin-right: 10px;
+        }
+
+        .plan-card .cta-button {
+            width: 100%;
+            justify-content: center;
+        }
+
+        /* How it Works */
+        .how-it-works {
+            padding: 100px 0;
+            background-color: var(--light);
+        }
+
+        .steps {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin-top: 50px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .steps::before {
+            content: '';
+            position: absolute;
+            top: 40px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--light-gray);
+            z-index: 1;
+        }
+
+        .step {
+            flex: 1;
+            min-width: 200px;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .step-number {
+            width: 80px;
+            height: 80px;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 700;
+            margin: 0 auto 20px;
+            transition: var(--transition);
+        }
+
+        .step:hover .step-number {
+            background-color: var(--primary-dark);
+            transform: scale(1.1);
+        }
+
+        .step h3 {
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+
+        .step p {
+            color: var(--gray);
+        }
+
+        /* Testimonials */
+        .testimonials {
+            padding: 100px 0;
+            background-color: white;
+        }
+
+        .testimonials-slider {
+            margin: 0 -15px;
+        }
+
+        .testimonial-card {
+            background-color: var(--light);
+            border-radius: 10px;
+            padding: 30px;
+            margin: 15px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .testimonial-text {
+            font-style: italic;
+            margin-bottom: 20px;
+            color: var(--dark);
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .testimonial-text::before {
+            content: '"';
+            position: absolute;
+            left: 0;
+            top: -10px;
+            font-size: 50px;
+            color: var(--primary);
+            opacity: 0.3;
+            font-family: Georgia, serif;
+        }
+
+        .testimonial-author {
+            text-align: center;
+            margin-top: 20px;
+            font-style: normal;
+        }
+
+        .testimonial-author h4 {
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+
+        .testimonial-author p {
+            color: var(--gray);
+            font-size: 14px;
+            font-style: italic;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            padding: 100px 0;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .cta-section h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+
+        .cta-section p {
+            font-size: 18px;
+            margin-bottom: 30px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            opacity: 0.9;
+        }
+
+        .cta-section .cta-button {
+            background-color: white;
+            color: var(--primary);
+            font-size: 18px;
+            padding: 15px 40px;
+        }
+
+        .cta-section .cta-button:hover {
+            background-color: var(--light);
+            transform: translateY(-3px);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 70px 0 30px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 50px;
+        }
+
+        .footer-column h3 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .footer-column p, .footer-column a {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 10px;
+            display: block;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-column a:hover {
+            color: white;
+            padding-left: 5px;
+        }
+
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .contact-item i {
+            color: var(--secondary);
+            font-size: 20px;
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .hero-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .hero-text h1 {
+                font-size: 36px;
+            }
+
+            .steps::before {
+                display: none;
+            }
+
+            .step {
+                margin-bottom: 30px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu {
+                display: block;
+            }
+
+            nav {
+                position: fixed;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background-color: white;
+                box-shadow: var(--shadow);
+                padding: 20px;
+                transform: translateY(-100%);
+                opacity: 0;
+                transition: var(--transition);
+                z-index: 999;
+            }
+
+            nav.active {
+                transform: translateY(0);
+                opacity: 1;
+            }
+
+            nav ul {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .hero {
+                padding: 120px 0 80px;
+            }
+
+            .section-title h2 {
+                font-size: 30px;
+            }
+
+            .floating-element {
+                display: none;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .hero-text h1 {
+                font-size: 30px;
+            }
+
+            .section-title h2 {
+                font-size: 28px;
+            }
+
+            .plan-card {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- WhatsApp Floating Button -->
+    <div class="whatsapp-float" id="whatsapp-float">
+        <div class="whatsapp-pulse"></div>
+        <i class="fab fa-whatsapp"></i>
+        <div class="whatsapp-text">
+            <strong>Transforma la gestión de tu consultorio</strong>
+            <span>¡Contáctanos ahora!</span>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="container header-container">
+            <div class="logo">
+                <i class="fas fa-stethoscope"></i>
+                <div class="logo-text">SYSTEM <span>WORLD</span></div>
+            </div>
+            
+            <div class="mobile-menu">
+                <i class="fas fa-bars"></i>
+            </div>
+            
+            <nav>
+                <ul>
+                    <li><a href="#features">Características</a></li>
+                    <li><a href="#plans">Planes</a></li>
+                    <li><a href="#how-it-works">Cómo funciona</a></li>
+                    <li><a href="#testimonials">Testimonios</a></li>
+                    <li><a href="#contact">Contacto</a></li>
+                </ul>
+            </nav>
+            
+            <button class="cta-button whatsapp" id="header-whatsapp">
+                <i class="fab fa-whatsapp"></i> Contáctanos
+            </button>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container hero-content">
+            <div class="hero-text">
+                <h1>Tu consultorio no se adapta a nuestro software, <span>nuestro software se adapta a tu consultorio</span></h1>
+                <p>La solución simple, rápida y adaptada a tu forma de trabajar, para que cumplas la normativa sin complicarte. Tu tiempo debe estar en los pacientes, no en la gestión administrativa.</p>
+                <button class="cta-button whatsapp" id="hero-whatsapp">
+                    <i class="fab fa-whatsapp"></i> Solicitar demostración
+                </button>
+            </div>
+            <div class="hero-image">
+                <div class="floating-element">
+                    <i class="fas fa-clock"></i>
+                    <div>
+                        <h4>Ahorra tiempo</h4>
+                        <p>+40% de eficiencia</p>
+                    </div>
+                </div>
+                <div class="floating-element">
+                    <i class="fas fa-heartbeat"></i>
+                    <div>
+                        <h4>+500 consultorios</h4>
+                        <p>Confían en nosotros</p>
+                    </div>
+                </div>
+                <!-- Imagen cambiada a fisioterapia -->
+                <img src="https://plus.unsplash.com/premium_photo-1661962597572-e0a140d8bc20?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D=1000&q=80" alt="Fisioterapeuta trabajando con paciente">
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-title">
+                <h2>Un sistema clínico sencillo, completo y hecho a tu medida</h2>
+                <p>Todo lo que necesitas para gestionar tu consultorio de fisioterapia de manera eficiente y conforme a la normativa colombiana</p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-medical"></i>
+                    </div>
+                    <h3>Historia clínica digital</h3>
+                    <p>Cumple con los requisitos normativos de manera organizada y segura, con acceso rápido desde cualquier dispositivo.</p>
+                    <!-- Botón eliminado según solicitud -->
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <h3>Agenda con recordatorios por WhatsApp</h3>
+                    <p>Reduce las inasistencias con recordatorios automáticos a tus pacientes. Agenda citas en segundos.</p>
+                    <!-- Botón eliminado según solicitud -->
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Reportes automáticos</h3>
+                    <p>Genera reportes de servicios, ingresos y productividad con un solo clic. Toma decisiones basadas en datos.</p>
+                    <!-- Botón eliminado según solicitud -->
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                    </div>
+                    <h3>Gestión de archivos RIPS</h3>
+                    <p>Genera archivos RIPS listos para subir al Ministerio de Salud. Cumple con la normativa sin complicaciones.</p>
+                    <!-- Botón eliminado según solicitud -->
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <h3>Consentimientos informados</h3>
+                    <p>Gestiona consentimientos digitales con firma del paciente. Todo almacenado de forma segura y accesible.</p>
+                    <!-- Botón eliminado según solicitud -->
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <h3>Personalización total</h3>
+                    <p>Adaptamos cualquier parte del sistema a tus procesos: flujos especiales, cálculos, reportes y automatizaciones.</p>
+                    <!-- Botón eliminado según solicitud -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Plans Section -->
+    <section class="plans" id="plans">
+        <div class="container">
+            <div class="section-title">
+                <h2>Planes a tu medida</h2>
+                <p>Elige el plan que mejor se adapte a las necesidades de tu consultorio. Pago único sin mensualidades.</p>
+            </div>
+            
+            <div class="plans-slider">
+                <div class="plan-card">
+                    <div class="plan-header">
+                        <h3 class="plan-name">Plan Básico</h3>
+                        <div class="plan-price">$890.000</div>
+                        <p class="plan-period">Pago único - Sin mensualidades</p>
+                    </div>
+                    
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check"></i> Agenda y recordatorios por WhatsApp</li>
+                        <li><i class="fas fa-check"></i> Registro de pacientes, sesiones y evoluciones</li>
+                        <li><i class="fas fa-check"></i> Historia clínica digital</li>
+                        <li><i class="fas fa-check"></i> Control de sesiones por servicio</li>
+                        <li><i class="fas fa-check"></i> Reporte general de servicios</li>
+                        <li><i class="fas fa-check"></i> Consentimientos informados</li>
+                        <li><i class="fas fa-check"></i> Uso en 5 dispositivos</li>
+                        <li><i class="fas fa-check"></i> Usuarios ilimitados</li>
+                    </ul>
+                    
+                    <button class="cta-button whatsapp plan-select" data-plan="Básico">
+                        <i class="fab fa-whatsapp"></i> Cotizar este plan
+                    </button>
+                </div>
+                
+                <div class="plan-card">
+                    <div class="plan-header">
+                        <h3 class="plan-name">Plan Plus</h3>
+                        <div class="plan-price">$1.290.000</div>
+                        <p class="plan-period">Pago único - Sin mensualidades</p>
+                    </div>
+                    
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check"></i> <strong>Incluye todo el Plan Básico +</strong></li>
+                        <li><i class="fas fa-check"></i> Cierres de caja</li>
+                        <li><i class="fas fa-check"></i> Control de inventario</li>
+                        <li><i class="fas fa-check"></i> 5 funciones personalizadas a la medida</li>
+                        <li><i class="fas fa-check"></i> Ej: cálculo automático de comisiones</li>
+                        <li><i class="fas fa-check"></i> Ej: estadísticas avanzadas</li>
+                        <li><i class="fas fa-check"></i> Ej: documentos especiales</li>
+                        <li><i class="fas fa-check"></i> Ej: automatizaciones específicas</li>
+                    </ul>
+                    
+                    <button class="cta-button whatsapp plan-select" data-plan="Plus">
+                        <i class="fab fa-whatsapp"></i> Cotizar este plan
+                    </button>
+                </div>
+                
+                <div class="plan-card popular">
+                    <div class="plan-header">
+                        <h3 class="plan-name">Plan Pro</h3>
+                        <div class="plan-price">$1.690.000</div>
+                        <p class="plan-period">Pago único - Sin mensualidades</p>
+                    </div>
+                    
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check"></i> <strong>Incluye todo el Plan Plus +</strong></li>
+                        <li><i class="fas fa-check"></i> Generación de archivos RIPS listos para subir al Ministerio de Salud</li>
+                        <li><i class="fas fa-check"></i> Integración con plataformas de salud</li>
+                        <li><i class="fas fa-check"></i> Soporte prioritario</li>
+                        <li><i class="fas fa-check"></i> 10 funciones personalizadas a la medida</li>
+                        <li><i class="fas fa-check"></i> Capacitación extendida para tu equipo</li>
+                        <li><i class="fas fa-check"></i> Actualizaciones gratuitas por 1 año</li>
+                        <li><i class="fas fa-check"></i> Uso en 10 dispositivos</li>
+                    </ul>
+                    
+                    <button class="cta-button whatsapp plan-select" data-plan="Pro">
+                        <i class="fab fa-whatsapp"></i> Cotizar este plan
+                    </button>
+                </div>
+            </div>
+            
+            <div class="section-title" style="margin-top: 60px;">
+                <p><strong>No importa cómo trabajes.</strong> Creamos las herramientas que necesitas. Cada consultorio tiene una forma distinta de organizar su información. Por eso, adaptamos cualquier parte del sistema a tus procesos.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- How it Works -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="container">
+            <div class="section-title">
+                <h2>Cómo funciona</h2>
+                <p>Implementamos tu sistema en 5 sencillos pasos</p>
+            </div>
+            
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Reunión de diagnóstico</h3>
+                    <p>Entendemos tu consultorio y qué funciones necesitas.</p>
+                    <!-- Botón eliminado según solicitud -->
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Configuración del sistema</h3>
+                    <p>Instalamos tu plan (básico/plus/pro) en tu infraestructura.</p>
+                    <!-- Botón eliminado según solicitud -->
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Personalización</h3>
+                    <p>Creamos vistas, reportes y automatizaciones especiales según tu necesidad.</p>
+                    <!-- Botón eliminado según solicitud -->
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3>Entrega + capacitación</h3>
+                    <p>Explicamos el uso del sistema en 30–45 minutos a tu equipo.</p>
+                    <!-- Botón eliminado según solicitud -->
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <h3>Acompañamiento</h3>
+                    <p>Soporte continuo si necesitas cambios o mejoras.</p>
+                    <!-- Botón eliminado según solicitud -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="testimonials" id="testimonials">
+        <div class="container">
+            <div class="section-title">
+                <h2>Lo que dicen nuestros clientes</h2>
+                <p>Consultorios de fisioterapia en Colombia que ya optimizaron su gestión con SYSTEM WORLD</p>
+            </div>
+            
+            <div class="testimonials-slider">
+                <!-- Testimonio 1 -->
+                <div class="testimonial-card">
+                    <div class="testimonial-text">
+                        Llevaba años usando sistemas complicados y caros. Con SYSTEM WORLD por fin tengo un software que se adapta a mi forma de trabajar. La generación automática de RIPS me ahorra horas cada mes.
+                    </div>
+                    <div class="testimonial-author">
+                        <h4></h4>
+                        <p>Fisioterapia Deportiva, Bogotá</p>
+                    </div>
+                    <!-- Botón eliminado según solicitud -->
+                </div>
+                
+                <!-- Testimonio 2 -->
+                <div class="testimonial-card">
+                    <div class="testimonial-text">
+                        La personalización fue clave para nosotros. Adaptaron el sistema para calcular automáticamente las comisiones de los terapeutas y generar los reportes específicos que necesitamos. El soporte es excelente.
+                    </div>
+                    <div class="testimonial-author">
+                        <h4></h4>
+                        <p>Rehabilitación Física, Medellín</p>
+                    </div>
+                    <!-- Botón eliminado según solicitud -->
+                </div>
+                
+                <!-- Testimonio 3 -->
+                <div class="testimonial-card">
+                    <div class="testimonial-text">
+                        Los recordatorios por WhatsApp redujeron nuestras inasistencias en un 60%. Además, la historia clínica digital nos permite acceder a la información de los pacientes desde cualquier lugar. Muy recomendado.
+                    </div>
+                    <div class="testimonial-author">
+                        <h4></h4>
+                        <p>Clínica Especializada, Cali</p>
+                    </div>
+                    <!-- Botón eliminado según solicitud -->
+                </div>
+                
+                <!-- Testimonio 4 (NUEVO) -->
+                <div class="testimonial-card">
+                    <div class="testimonial-text">
+                        Como consultorio pequeño, necesitaba algo económico pero completo. SYSTEM WORLD cumplió con todo y la atención personalizada hizo que la adaptación fuera muy sencilla para todo mi equipo.
+                    </div>
+                    <div class="testimonial-author">
+                        <h4></h4>
+                        <p>Consultorio Particular, Barranquilla</p>
+                    </div>
+                    <!-- Botón eliminado según solicitud -->
+                </div>
+                
+                <!-- Testimonio 5 (NUEVO) -->
+                <div class="testimonial-card">
+                    <div class="testimonial-text">
+                        La gestión de inventario y cierres de caja automatizados nos han permitido enfocarnos 100% en nuestros pacientes. El retorno de inversión fue casi inmediato con el tiempo que ahorramos.
+                    </div>
+                    <div class="testimonial-author">
+                        <h4></h4>
+                        <p>Centro de Terapia Física, Bucaramanga</p>
+                    </div>
+                    <!-- Botón eliminado según solicitud -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <h2>¿Listo para optimizar la gestión de tu consultorio?</h2>
+            <p>Más de 500 consultorios en Colombia ya confían en SYSTEM WORLD para gestionar sus pacientes, cumplir con la normativa y ahorrar tiempo administrativo.</p>
+            <button class="cta-button whatsapp" id="final-whatsapp">
+                <i class="fab fa-whatsapp"></i> Contáctanos por WhatsApp
+            </button>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>SYSTEM WORLD</h3>
+                    <p>Tu consultorio no se adapta a nuestro software, nuestro software se adapta a tu consultorio.</p>
+                    <p><strong>SOLUCIONES INFORMÁTICAS SYSTEMA WORLD SAS</strong></p>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Contacto</h3>
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <i class="fab fa-whatsapp"></i>
+                            <span>+57 300 5624999</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-envelope"></i>
+                            <span>fisioapp88@gmail.com</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Colombia</span>
+                        </div>
+                    </div>
+                    <button class="cta-button whatsapp" style="margin-top: 20px; width: 100%;" id="footer-whatsapp">
+                        <i class="fab fa-whatsapp"></i> Escribir por WhatsApp
+                    </button>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Enlaces rápidos</h3>
+                    <a href="#features">Características</a>
+                    <a href="#plans">Planes</a>
+                    <a href="#how-it-works">Cómo funciona</a>
+                    <a href="#testimonials">Testimonios</a>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Beneficios</h3>
+                    <a href="#"><i class="fas fa-check"></i> Cumplimiento normativo sin esfuerzo</a>
+                    <a href="#"><i class="fas fa-check"></i> Interfaz sencilla para cualquier persona</a>
+                    <a href="#"><i class="fas fa-check"></i> Acceso desde cualquier dispositivo</a>
+                    <a href="#"><i class="fas fa-check"></i> Ahorro de tiempo administrativo</a>
+                    <a href="#"><i class="fas fa-check"></i> Personalización total</a>
+                    <a href="#"><i class="fas fa-check"></i> Pago único. Sin mensualidades.</a>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>&copy; 2023 SYSTEM WORLD. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
+    <script>
+        // WhatsApp function with contextual messages
+        function openWhatsApp(message) {
+            const phoneNumber = "+573005624999";
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        // Generate contextual messages based on section
+        function getContextualMessage(context, data = null) {
+            const baseMessage = "Hola SYSTEM WORLD, vi su página web y me interesa ";
+            
+            const messages = {
+                'header': "obtener más información sobre el software para mi consultorio.",
+                'hero': "solicitar una demostración del software SYSTEM WORLD para mi consultorio.",
+                'plan': `cotizar el Plan ${data} de SYSTEM WORLD para mi consultorio.`,
+                'final': "agendar una reunión para conocer más sobre SYSTEM WORLD y cómo puede ayudar a mi consultorio.",
+                'float': "transformar la gestión de mi consultorio con SYSTEM WORLD. ¿Podrían darme más información?",
+                'footer': "escribirles por WhatsApp para consultar sobre SYSTEM WORLD para mi consultorio.",
+                'default': "conocer más sobre SYSTEM WORLD y cómo puede ayudar a optimizar la gestión de mi consultorio."
+            };
+            
+            return baseMessage + (messages[context] || messages['default']);
+        }
+
+        // Mobile menu toggle
+        document.querySelector('.mobile-menu').addEventListener('click', function() {
+            document.querySelector('nav').classList.toggle('active');
+        });
+
+        // Close mobile menu when clicking a link
+        document.querySelectorAll('nav a').forEach(link => {
+            link.addEventListener('click', function() {
+                document.querySelector('nav').classList.remove('active');
+            });
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if(targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if(targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // WhatsApp buttons with contextual messages (solo los que quedan)
+        document.getElementById('header-whatsapp').addEventListener('click', function() {
+            openWhatsApp(getContextualMessage('header'));
+        });
+
+        document.getElementById('hero-whatsapp').addEventListener('click', function() {
+            openWhatsApp(getContextualMessage('hero'));
+        });
+
+        document.getElementById('final-whatsapp').addEventListener('click', function() {
+            openWhatsApp(getContextualMessage('final'));
+        });
+
+        document.getElementById('footer-whatsapp').addEventListener('click', function() {
+            openWhatsApp(getContextualMessage('footer'));
+        });
+
+        // Floating WhatsApp button
+        document.getElementById('whatsapp-float').addEventListener('click', function() {
+            openWhatsApp(getContextualMessage('float'));
+        });
+
+        // Plan selection WhatsApp buttons (se mantienen)
+        document.querySelectorAll('.plan-select').forEach(button => {
+            button.addEventListener('click', function() {
+                const plan = this.getAttribute('data-plan');
+                openWhatsApp(getContextualMessage('plan', plan));
+            });
+        });
+
+        // Initialize sliders
+        $(document).ready(function(){
+            $('.plans-slider').slick({
+                dots: true,
+                infinite: true,
+                speed: 300,
+                slidesToShow: 3,
+                slidesToScroll: 1,
+                responsive: [
+                    {
+                        breakpoint: 1024,
+                        settings: {
+                            slidesToShow: 2,
+                            slidesToScroll: 1
+                        }
+                    },
+                    {
+                        breakpoint: 768,
+                        settings: {
+                            slidesToShow: 1,
+                            slidesToScroll: 1
+                        }
+                    }
+                ]
+            });
+            
+            $('.testimonials-slider').slick({
+                dots: true,
+                infinite: true,
+                speed: 300,
+                slidesToShow: 3,
+                slidesToScroll: 1,
+                responsive: [
+                    {
+                        breakpoint: 1024,
+                        settings: {
+                            slidesToShow: 2,
+                            slidesToScroll: 1
+                        }
+                    },
+                    {
+                        breakpoint: 768,
+                        settings: {
+                            slidesToShow: 1,
+                            slidesToScroll: 1
+                        }
+                    }
+                ]
+            });
+        });
+
+        // Add hover effect to feature cards
+        document.querySelectorAll('.feature-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                const icon = this.querySelector('.feature-icon i');
+                icon.style.transform = 'scale(1.2)';
+                icon.style.transition = 'transform 0.3s ease';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                const icon = this.querySelector('.feature-icon i');
+                icon.style.transform = 'scale(1)';
+            });
+        });
+
+        // Add scroll animation
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('header');
+            if (window.scrollY > 100) {
+                header.style.boxShadow = '0 8px 30px rgba(0, 0, 0, 0.12)';
+            } else {
+                header.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.1)';
+            }
+        });
+    </script>
+</body>
+</html>
